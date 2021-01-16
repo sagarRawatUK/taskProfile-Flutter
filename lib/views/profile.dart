@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:app/constants/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:app/views/page1.dart';
 import 'package:app/views/page2.dart';
@@ -20,26 +21,31 @@ class _HomePageState extends State<HomePage> {
   PageController _controller = PageController(
     initialPage: 0,
   );
-  ScrollController _scrollController = ScrollController();
+  ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
     _initImages();
+    _scrollController = ScrollController();
     _scrollController.addListener(() {
       if (_scrollController.position.userScrollDirection ==
           ScrollDirection.reverse) {
         if (!isScrollingDown) {
-          isScrollingDown = true;
-          setState(() {});
+          setState(() {
+            isScrollingDown = true;
+          });
+          print(isScrollingDown);
         }
       }
 
       if (_scrollController.position.userScrollDirection ==
           ScrollDirection.forward) {
         if (isScrollingDown) {
-          isScrollingDown = false;
-          setState(() {});
+          setState(() {
+            isScrollingDown = false;
+          });
+          print(isScrollingDown);
         }
       }
     });
@@ -82,6 +88,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black,
@@ -90,82 +97,72 @@ class _HomePageState extends State<HomePage> {
         color: Colors.black,
         child: Column(
           children: [
-            isScrollingDown
-                ? Container()
-                : Column(
-                    children: [
-                      CircleAvatar(
-                        backgroundImage: AssetImage("assets/profile.jpg"),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        "Samantha Smith",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 23,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        "@imsamanthasmith",
-                        style: TextStyle(color: Colors.grey[600]),
-                      ),
-                      SizedBox(
-                        height: 30,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Column(
-                            children: [
-                              Text(
-                                "1.2m",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                "Liked",
-                                style: TextStyle(color: Colors.grey[600]),
-                              )
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Text(
-                                "12.8k",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                "Followers",
-                                style: TextStyle(color: Colors.grey[600]),
-                              )
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Text(
-                                "1.9k",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 23,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                "Following",
-                                style: TextStyle(color: Colors.grey[600]),
-                              )
-                            ],
-                          ),
-                        ],
-                      )
-                    ],
+            AnimatedContainer(
+              height: isScrollingDown ? 0 : height * 0.25,
+              duration: Duration(milliseconds: 400),
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    backgroundImage: AssetImage("assets/profile.jpg"),
                   ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    "Samantha Smith",
+                    style: profileText(),
+                  ),
+                  Text(
+                    "@imsamanthasmith",
+                    style: profileValues(),
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Column(
+                        children: [
+                          Text(
+                            "1.2m",
+                            style: profileStats(),
+                          ),
+                          Text(
+                            "Liked",
+                            style: profileValues(),
+                          )
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Text(
+                            "12.8k",
+                            style: profileStats(),
+                          ),
+                          Text(
+                            "Followers",
+                            style: profileValues(),
+                          )
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Text(
+                            "1.9k",
+                            style: profileStats(),
+                          ),
+                          Text(
+                            "Following",
+                            style: profileValues(),
+                          )
+                        ],
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
             SizedBox(
               height: 30,
             ),
@@ -216,21 +213,19 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
             Expanded(
-              child: Container(
-                child: PageView(
-                  physics: BouncingScrollPhysics(),
-                  controller: _controller,
-                  onPageChanged: (value) {
-                    setState(() {
-                      currentPage = value;
-                    });
-                  },
-                  children: [
-                    Page1(foodImages),
-                    Page2(danceImages),
-                    Page3(lolImages),
-                  ],
-                ),
+              child: PageView(
+                physics: BouncingScrollPhysics(),
+                controller: _controller,
+                onPageChanged: (value) {
+                  setState(() {
+                    currentPage = value;
+                  });
+                },
+                children: [
+                  Page1(foodImages),
+                  Page2(danceImages),
+                  Page3(lolImages),
+                ],
               ),
             )
           ],
